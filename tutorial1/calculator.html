@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <div>
+    <h2>Enter first number :</h2>
+    <input type="number" id="num1" />
+    <h2>Enter second number :</h2>
+    <input type="number" id="num2" />
+    <br />
+    <br />
+    <button onclick="calculate('add')">add</button>
+    <button onclick="calculate('sub')">sub</button>
+    <button onclick="calculate('multiply')">multiply</button>
+    <button onclick="calculate('divide')">divide</button>
+    <h2 id="result">result</h2>
+  </div>
+  <body>
+    <script>
+      function calculate(operation) {
+        let firstNumber = Number(document.getElementById("num1").value);
+        let secondNumber = Number(document.getElementById("num2").value);
+        let result;
+
+        if (operation === "add") {
+          result = firstNumber + secondNumber;
+        } else if (operation === "sub") {
+          result = firstNumber - secondNumber;
+        } else if (operation === "multiply") {
+          result = firstNumber * secondNumber;
+        } else if (operation === "divide") {
+          result = firstNumber / secondNumber;
+        }
+        document.getElementById("result").innerText = "result:" + result;
+      }
+    </script>
+  </body>
+</html>

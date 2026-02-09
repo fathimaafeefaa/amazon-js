@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="flex">
+      <button
+        onclick="cartQuantity =1 
+          console.log(`cart Quantity: ${cartQuantity}`);updateCart()"
+      >
+        show quatity
+      </button>
+      <button
+        onclick="cartQuantity +=1 
+          console.log(`cart Quantity: ${cartQuantity}`);updateCart()"
+      >
+        Add to cart
+      </button>
+      <button
+        onclick="cartQuantity +=2
+          console.log(`cart Quantity: ${cartQuantity}`);updateCart()"
+      >
+        + 2
+      </button>
+      <button
+        onclick="cartQuantity +=3 ;
+          console.log(`cart Quantity: ${cartQuantity}`);updateCart()"
+      >
+        + 3
+      </button>
+      <button
+        onclick="cartQuantity =0
+      console.log(`cart quatity: ${cartQuantity}`); updateCart()"
+      >
+        reset cart
+      </button>
+      <p class="cartinfo"></p>
+    </div>
+
+    <script>
+      let cartQuantity = 0;
+
+     function updateCart(){
+       document.querySelector(".cartinfo").innerHTML =
+        `cart Quantity = ${cartQuantity}`;
+     }
+     updateCart()
+    </script>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h2>To Do List practice</h2>
+    <div>
+      <input type="text" class="js_input" />
+      <input type="date" />
+      <button onclick="updateList()">add</button>
+      <ul class="js_list"></ul>
+    </div>
+    <script>
+      function updateList() {
+        const input = document.querySelector(".js_input");
+        const element = input.value;
+        todoList.push(element);
+        input.value = "";
+        console.log(todoList);
+        renderList();
+      }
+      function renderList() {
+        let html = "";
+
+        todoList.forEach(function (value, index) {
+          html += `<li>
+            ${value}<button onclick="deleteButton('${todoList[i]}')">delete</button></li>`;
+        });
+        document.querySelector(".js_list").innerHTML = html;
+      }
+      function deleteButton(index) {
+        const index = todoList.indexOf(value);
+        if (index !== -1) {
+          todoList.splice(index, 1);
+          renderList();
+        }
+      }
+    </script>
+  </body>
+</html>

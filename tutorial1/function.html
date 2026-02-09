@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <button onclick="changeText('head')" class="head">head</button>
+    <button onclick="changeText('tail')" class="tail">tails</button>
+    <p class="para"></p>
+    <input
+      type="text
+    "
+      class="person_name"
+    />
+    <button onclick=" changeName()">submit</button>
+    <p class="content"></p>
+
+    <input type="number" class="input_cal" />
+    <button onclick="calculate()">calculate</button>
+    <p class="textContent"></p>
+
+    <input type="text" class="sameText" onkeydown=" eventHandler()" />
+    <p class="sameContent"></p>
+    <script>
+      function changeText(choice) {
+        if (choice === "head") {
+          document.querySelector(".para").innerHTML = `you clicked head`;
+        } else {
+          document.querySelector(".para").innerHTML = `you clicked tail`;
+        }
+      }
+      function changeName() {
+        const name = document.querySelector(".person_name");
+        document.querySelector(".content").innerHTML =
+          `your name is ${name.value}`;
+      }
+      function calculate() {
+        const inputCalculate = document.querySelector(".input_cal");
+        const inputValue = Number(inputCalculate.value) + 10;
+        document.querySelector(".textContent").innerHTML =
+          `The value is ${inputValue}`;
+      }
+      function eventHandler()
+      {if (event.key == "Enter") {
+        const sameValue = document.querySelector(".sameText").value;
+        document.querySelector(".sameContent").innerHTML = `${sameValue}`;
+      }}
+    </script>
+  </body>
+</html>
