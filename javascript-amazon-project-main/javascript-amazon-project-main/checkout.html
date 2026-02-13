@@ -3,9 +3,6 @@
   <head>
     <title>Checkout</title>
 
-    <!-- This code is needed for responsive design to work.
-      (Responsive design = make the website look good on
-      smaller screen sizes like a phone or a tablet). -->
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <!-- Load a font called Roboto from Google Fonts. -->
@@ -43,8 +40,8 @@
       <div class="page-title">Review your order</div>
 
       <div class="checkout-grid">
-        <div class="order-summary">
-          <div class="cart-item-container">
+        <div class="order-summary js_order_summary">
+          <!-- <div class="cart-item-container">
             <div class="delivery-date">
               Delivery date: Tuesday, June 21
             </div>
@@ -60,17 +57,15 @@
                 <div class="product-price">
                   $10.90
                 </div>
-                <div class="product-quantity">
-                  <span>
-                    Quantity: <span class="quantity-label">2</span>
-                  </span>
-                  <span class="update-quantity-link link-primary">
-                    Update
-                  </span>
-                  <span class="delete-quantity-link link-primary">
-                    Delete
-                  </span>
-                </div>
+               <div class="product-quantity">
+  <span>
+    Quantity:
+    <span class="quantity-label">${cartItem.quantity}</span>
+  </span>
+  <span class="update-quantity-link link-primary">Update</span>
+  <span class="delete-quantity-link link-primary">Delete</span>
+</div>
+
               </div>
 
               <div class="delivery-options">
@@ -192,7 +187,7 @@
                 </div>
               </div>
             </div>
-          </div>
+          </div> -->
         </div>
 
         <div class="payment-summary">
@@ -231,5 +226,6 @@
         </div>
       </div>
     </div>
+    <script type="module" src="/javascript-amazon-project-main/scripts/checkout.js" ></script>
   </body>
 </html>
