@@ -1,29 +1,38 @@
-import { products } from "./products.js";
+import { products,loadProducts } from "./products.js";
 import { addToCart, calculateCartQuantity } from "./cart.js";
 import { formatCurrency } from "./utils/money.js";
+
+loadProducts().then(renderProducts);
+
+function renderProducts(){
+
 
 let productsHTML = "";
 
 products.forEach((product) => {
-  productsHTML += `
-    <div class="product-container">
+productsHTML += `
+  <div class="product-container">
+    <div class="product-image-container">
       <img class="product-image" src="${product.image}">
-
-      <div class="product-name">
-        ${product.name}
-      </div>
-
-      <div class="product-price">
-        $${formatCurrency(product.priceCents)}
-      </div>
-
-      <button
-        class="add-to-cart-button js-add-to-cart"
-        data-product-id="${product.id}">
-        Add to Cart
-      </button>
     </div>
-  `;
+
+    <div class="product-name">
+      ${product.name}
+    </div>
+
+    <div class="product-price">
+      $${formatCurrency(product.priceCents)}
+    </div>
+
+    <div class="product-spacer"></div>
+
+    <button
+      class="add-to-cart-button js-add-to-cart"
+      data-product-id="${product.id}">
+      Add to Cart
+    </button>
+  </div>
+`;
 });
 
 document.querySelector(".js_product").innerHTML = productsHTML;
@@ -43,3 +52,4 @@ function updateCartQuantity() {
 }
 
 updateCartQuantity();
+}

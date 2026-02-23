@@ -3,68 +3,82 @@ import {
   removeFromCart,
   updateQuantity,
   updateDeliveryOption,
+  loadCart,
 } from "./cart.js";
-import { products } from "./products.js";
+
+import { products, loadProducts } from "./products.js";
 import { formatCurrency } from "./utils/money.js";
 import dayjs from "https://cdn.jsdelivr.net/npm/dayjs@1.11.10/+esm";
 import { deliveryOptions } from "./delivery-options.js";
+
+async function loadPage() {
+  try {
+    await loadProducts();
+    const value = await loadCart();
+  } catch (error) {
+    console.log("unexpected error");
+  }
+
+  renderCheckout();
+}
+loadPage().then((value) => {
+  console.log("next step");
+  console.log(value);
+});
+
+// Promise.all([loadProducts(), new Promise((resolve) => loadCart(resolve))]).then(
+//   () => {
+//     renderCheckout();
+//   },
+// );
+
+// new Promise((resolve) => {
+//   loadProducts(() => {
+//     resolve();
+//   });
+// })
+//   .then(() => {
+//     return new Promise((resolve) => {
+//       loadCart(() => {
+//         resolve();
+//       });
+//     });
+//   })
+//   .then(() => {
+
+//   });
+
+// loadProducts(() => {
+//     loadCart (()=>{
+//  renderCheckout();
+//     })
+
+// });
 
 function getDeliveryDate(deliveryDays) {
   return dayjs().add(deliveryDays, "day").format("dddd, MMMM D");
 }
 
-function generateDeliveryOptionsHTML(cartItem) {
-  let html = "";
-
-  deliveryOptions.forEach((option) => {
-    const dateString = getDeliveryDate(option.deliveryDays);
-
-    const isChecked = option.id === cartItem.deliveryOptionId ? "checked" : "";
-
-    html += `
-      <div class="delivery-option">
-        <input type="radio"
-          class="delivery-option-input"
-          data-product-id="${cartItem.productId}"
-          data-delivery-option-id="${option.id}"
-          name="delivery-option-${cartItem.productId}"
-          ${isChecked}
-        >
-        <div>
-          <div class="delivery-option-date">
-            ${dateString}
-          </div>
-          <div class="delivery-option-price">
-            ${
-              option.priceCents === 0
-                ? "FREE Shipping"
-                : `$${formatCurrency(option.priceCents)} - Shipping`
-            }
-          </div>
-        </div>
-      </div>
-    `;
-  });
-
-  return html;
-}
-
 function renderCheckout() {
   let summaryHTML = "";
+
+  if (!products.length) {
+    console.log("Products not loaded yet.");
+    return;
+  }
 
   cart.forEach((cartItem) => {
     const product = products.find((p) => p.id === cartItem.productId);
 
-    // const deliveryOption = deliveryOptions.find(
-    //   (option) => option.id === cartItem.deliveryOptionId,
-    // );
+    if (!product) {
+      console.error("Product not found for:", cartItem.productId);
+      return;
+    }
 
-    // const deliveryDate = getDeliveryDate(deliveryOption.deliveryDays);
     let deliveryOption = deliveryOptions.find(
       (option) => option.id === cartItem.deliveryOptionId,
     );
 
-    // If no delivery option found, use default
     if (!deliveryOption) {
       deliveryOption = deliveryOptions[0];
     }
@@ -86,15 +100,15 @@ function renderCheckout() {
             </div>
            
             <div class="product-price">
-  $${formatCurrency(product.priceCents)}
-</div>
+              $${formatCurrency(product.priceCents)}
+            </div>
 
-<div class="product-subtotal">
-  Subtotal:
-  <span class="js-subtotal-${product.id}">
-    $${formatCurrency(product.priceCents * cartItem.quantity)}
-  </span>
-</div>
+            <div class="product-subtotal">
+              Subtotal:
+              <span class="js-subtotal-${product.id}">
+                $${formatCurrency(product.priceCents * cartItem.quantity)}
+              </span>
+            </div>
 
             <div class="product-quantity">
               Quantity:
@@ -128,37 +142,66 @@ function renderCheckout() {
   updatePaymentSummary();
 }
 
+function generateDeliveryOptionsHTML(cartItem) {
+  let html = "";
+
+  deliveryOptions.forEach((option) => {
+    const dateString = getDeliveryDate(option.deliveryDays);
+    const isChecked = option.id === cartItem.deliveryOptionId ? "checked" : "";
+
+    html += `
+      <div class="delivery-option">
+        <input type="radio"
+          class="delivery-option-input"
+          data-product-id="${cartItem.productId}"
+          data-delivery-option-id="${option.id}"
+          name="delivery-option-${cartItem.productId}"
+          ${isChecked}
+        >
+        <div>
+          <div class="delivery-option-date">
+            ${dateString}
+          </div>
+          <div class="delivery-option-price">
+            ${
+              option.priceCents === 0
+                ? "FREE Shipping"
+                : `$${formatCurrency(option.priceCents)} - Shipping`
+            }
+          </div>
+        </div>
+      </div>
+    `;
+  });
+
+  return html;
+}
+
 function addEventListeners() {
-  // DELETE
   document.querySelectorAll(".delete-link").forEach((button) => {
     button.addEventListener("click", () => {
-      const productId = button.dataset.productId;
-      removeFromCart(productId);
+      removeFromCart(button.dataset.productId);
       renderCheckout();
     });
   });
 
-  // QUANTITY CHANGE
   document.querySelectorAll(".quantity-input").forEach((input) => {
     input.addEventListener("change", () => {
       const productId = input.dataset.productId;
       const newQuantity = Number(input.value);
-   updateQuantity(productId, newQuantity);
-   updateItemSubtotal(productId);
-   updatePaymentSummary();
 
+      updateQuantity(productId, newQuantity);
+      renderCheckout();
     });
   });
 
-  // DELIVERY OPTION CHANGE  ✅ FIXED LOCATION
   document.querySelectorAll(".delivery-option-input").forEach((radio) => {
     radio.addEventListener("change", () => {
-      const productId = radio.dataset.productId;
-      const deliveryOptionId = radio.dataset.deliveryOptionId;
-
-   updateDeliveryOption(productId, deliveryOptionId);
-   updatePaymentSummary();
-
+      updateDeliveryOption(
+        radio.dataset.productId,
+        radio.dataset.deliveryOptionId,
+      );
+      renderCheckout();
     });
   });
 }
@@ -169,6 +212,8 @@ function updatePaymentSummary() {
 
   cart.forEach((cartItem) => {
     const product = products.find((p) => p.id === cartItem.productId);
+
+    if (!product) return;
 
     itemsTotal += product.priceCents * cartItem.quantity;
 
@@ -184,6 +229,7 @@ function updatePaymentSummary() {
   const totalBeforeTax = itemsTotal + shippingTotal;
   const tax = Math.round(totalBeforeTax * 0.1);
   const total = totalBeforeTax + tax;
+  const totalItems = cart.reduce((total, item) => total + item.quantity, 0);
 
   document.querySelector(".payment-summary").innerHTML = `
     <div class="payment-summary-title">
@@ -191,8 +237,8 @@ function updatePaymentSummary() {
     </div>
 
     <div class="payment-summary-row">
-      <div>Items (${cart.length}):</div>
-      <div class="payment-summary-money">
+<div>Items (${totalItems}):</div>      
+<div class="payment-summary-money">
         $${formatCurrency(itemsTotal)}
       </div>
     </div>
@@ -225,22 +271,35 @@ function updatePaymentSummary() {
       </div>
     </div>
 
-    <button class="place-order-button button-primary">
-      Place your order
+    <button class="place-order-button button-primary js-place-order">
+      Place your order  
     </button>
   `;
+
+  document
+    .querySelector(".js-place-order")
+    .addEventListener("click", async () => {
+      const response = await fetch("https://supersimplebackend.dev/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          cart: cart,
+        }),
+      });
+     const order = await response.json();
+
+     if (order.errorMessage) {
+       alert(order.errorMessage);
+       return;
+     }
+      const orders = JSON.parse(localStorage.getItem("orders")) || [];
+      orders.unshift(order);
+      localStorage.setItem("orders", JSON.stringify(orders));
+      cart.length = 0;
+      localStorage.setItem("cart", JSON.stringify([]));
+      window.location.href = "orders.html";
+      console.log("Sending cart:", cart);
+    });
 }
-
-renderCheckout();
-
-function updateItemSubtotal(productId) {
-  const cartItem = cart.find((item) => item.productId === productId);
-  const product = products.find((p) => p.id === productId);
-
-  const subtotalElement = document.querySelector(`.js-subtotal-${productId}`);
-
-  if (subtotalElement) {
-    subtotalElement.innerHTML = `$${formatCurrency(product.priceCents * cartItem.quantity)}`;
-  }
-}
-

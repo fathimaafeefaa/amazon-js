@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Simple Fake API Todo</title>
+  <style>
+    body {
+      font-family: Arial;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .container {
+      width: 450px;
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+    input {
+      width: 70%;
+      padding: 8px;
+    }
+
+    button {
+      padding: 8px;
+      margin-left: 5px;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid #ddd;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+  <h2>Fake API Todo</h2>
+
+  <input type="text" id="todoInput" placeholder="Enter todo">
+  <button onclick="addTodo()">Add</button>
+
+  <ul id="todoList"></ul>
+</div>
+
+<script>
+const API = "https://jsonplaceholder.typicode.com/todos";
+const list = document.getElementById("todoList");
+const input = document.getElementById("todoInput");
+
+// ----------------------
+// LOAD TODOS (GET)
+// ----------------------
+// async function loadTodos() {
+//   try {
+//     const res = await fetch(API + "?_limit=5");
+//     const data = await res.json();
+//     render(data);
+//   } catch (err) {
+//     alert("Error loading todos");
+//   }
+// }
+
+async function loadTodos() {
+try{
+    const res = await fetch(API + "?_limit=5");
+    const data = await res.json();  
+    render(data);
+}
+catch(err) {
+    alert("Error loading todos");
+}    
+}
+
+
+function render(todos) {
+  list.innerHTML = "";
+
+  todos.forEach(todo => {
+    const li = document.createElement("li");
+
+    li.innerHTML = `
+      ${todo.title}
+      <div>
+        <button onclick="updateTodo(${todo.id})">Edit</button>
+        <button onclick="deleteTodo(${todo.id})">Delete</button>
+      </div>
+    `;
+
+    list.appendChild(li);
+  });
+}
+
+
+async function addTodo() {
+  const title = input.value.trim();
+  if (!title) return alert("Enter something");
+
+  try {
+    const res = await fetch(API, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: title,
+        completed: false
+      })
+    });
+    const data = await res.json();
+    alert("Todo Added ");
+    input.value = "";
+    loadTodos();
+  } catch (err) {
+    alert("Error adding todo");
+  }
+}
+
+
+async function updateTodo(id) {
+  const newTitle = prompt("Enter new title:");
+  if (!newTitle) return;
+
+  try {
+    await fetch(API + "/" + id, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: newTitle,
+        completed: false
+      })
+    });
+
+    alert("Todo Updated (Fake API)");
+    loadTodos();
+  } catch (err) {
+    alert("Error updating todo");
+  }
+}
+
+
+async function deleteTodo(id) {
+  try {
+    await fetch(API + "/" + id, {
+      method: "DELETE"
+    });
+
+    alert("Todo Deleted (Fake API)");
+    loadTodos();
+  } catch (err) {
+    alert("Error deleting todo");
+  }
+}
+
+loadTodos();
+</script>
+
+</body>
+</html>
